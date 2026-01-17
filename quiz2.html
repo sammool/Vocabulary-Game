@@ -3,100 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>토스 게임 - 테두리 강조형</title>
+    <title>토스 게임</title>
     <style>
-        body { 
-            font-family: 'Pretendard', -apple-system, sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            background: #f5f7fa; 
-            color: #333; 
-            overflow: hidden; 
-        }
-
-        .card { 
-            background: white; 
-            padding: 30px 25px; 
-            border-radius: 30px; 
-            text-align: center; 
-            width: 440px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-        }
-
-        #level-info { 
-            color: #1a73e8; 
-            font-weight: bold; 
-            font-size: 1.4rem; 
-            margin-bottom: 10px; 
-        }
-
-        #timer-container { 
-            width: 100%; 
-            background: #e8f0fe; 
-            height: 10px; 
-            border-radius: 10px; 
-            margin: 20px 0; 
-            overflow: hidden; 
-        }
-
-        #timer-bar { 
-            width: 100%; 
-            height: 100%; 
-            background: #1a73e8; 
-            transition: linear; 
-        }
-
-        .grid { 
-            display: grid; 
-            gap: 8px; 
-            margin-top: 25px; 
-        }
-
-        .grid button { 
-            aspect-ratio: 1; 
-            border: 2px solid #e8f0fe; /* 기본 테두리 */
-            border-radius: 12px; 
-            background: #ffffff; 
-            color: #1a73e8; 
-            font-size: 1.1rem; 
-            font-weight: bold; 
-            cursor: pointer; 
-            padding: 0; 
-            transition: all 0.2s;
-            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.03);
-        }
-
-        /* [핵심] 테두리만 색상 변경하는 스타일 */
-        .grid button.correct-ans {
-            background-color: #ffffff !important; /* 배경은 흰색 유지 */
-            color: #4CAF50 !important;           /* 글자색 초록 */
-            border: 3px solid #4CAF50 !important; /* 테두리 초록 + 두껍게 */
-        }
-
-        .grid button.wrong-ans {
-            background-color: #ffffff !important; /* 배경은 흰색 유지 */
-            color: #F44336 !important;           /* 글자색 빨강 */
-            border: 3px solid #F44336 !important; /* 테두리 빨강 + 두껍게 */
-        }
-
+        body { font-family: 'Pretendard', -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f5f7fa; color: #333; overflow: hidden; }
+        .card { background: white; padding: 30px 25px; border-radius: 30px; text-align: center; width: 440px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        #level-info { color: #1a73e8; font-weight: bold; font-size: 1.4rem; margin-bottom: 10px; }
+        #timer-container { width: 100%; background: #e8f0fe; height: 10px; border-radius: 10px; margin: 20px 0; overflow: hidden; }
+        #timer-bar { width: 100%; height: 100%; background: #1a73e8; transition: linear; }
+        .grid { display: grid; gap: 8px; margin-top: 25px; }
+        .grid button { aspect-ratio: 1; border: 2px solid #e8f0fe; border-radius: 12px; background: #ffffff; color: #1a73e8; font-size: 1.1rem; font-weight: bold; cursor: pointer; padding: 0; transition: all 0.2s; }
+        .grid button.correct-ans { border: 3.5px solid #4CAF50 !important; color: #4CAF50 !important; }
+        .grid button.wrong-ans { border: 3.5px solid #F44336 !important; color: #F44336 !important; }
         .grid button:disabled { cursor: default; }
-
-        .instruction {
-            font-size: 1rem;
-            color: #666;
-            margin-bottom: 5px;
-        }
+        .instruction { font-size: 1rem; color: #666; }
     </style>
 </head>
 <body>
-
 <div class="card">
     <div id="level-info">Level 1</div>
     <div id="timer-container"><div id="timer-bar"></div></div>
-    <div class="instruction">다른 글자를 찾으세요!</div>
+    <div class="instruction">다른 글자(SAIC)를 찾으세요!</div>
     <div class="grid" id="game-grid"></div>
 </div>
 
@@ -114,30 +40,19 @@
     let isGameOver = false;
 
     function initGame() {
-        if (currentLevel >= stages.length) {
-            alert("🎊 미션 클리어! 대단한 집중력입니다.");
-            window.location.href = 'index.html';
-            return;
-        }
-
+        if (currentLevel >= stages.length) { alert("🎊 미션 클리어!"); window.location.href = 'index.html'; return; }
         isGameOver = false;
         const stage = stages[currentLevel];
         const gridSize = stage.size;
-        const totalCells = gridSize * gridSize;
-
         document.getElementById('level-info').innerText = `Level ${currentLevel + 1} (${gridSize}x${gridSize})`;
-        
         const grid = document.getElementById('game-grid');
         grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
         grid.innerHTML = "";
-
-        const diffIndex = Math.floor(Math.random() * totalCells);
-
-        for (let i = 0; i < totalCells; i++) {
+        const diffIndex = Math.floor(Math.random() * (gridSize * gridSize));
+        for (let i = 0; i < (gridSize * gridSize); i++) {
             const btn = document.createElement('button');
             if (gridSize === 5) btn.style.fontSize = "0.9rem";
             if (gridSize >= 6) btn.style.fontSize = "0.8rem";
-            
             btn.innerText = (i === diffIndex) ? stage.diff : stage.normal;
             btn.onclick = (e) => handleButtonClick(i === diffIndex, e.target, diffIndex);
             grid.appendChild(btn);
@@ -147,60 +62,32 @@
 
     function handleButtonClick(isCorrect, targetBtn, correctIdx) {
         if (isGameOver) return;
-        isGameOver = true; 
-        clearTimeout(timerId); 
-
+        isGameOver = true; clearTimeout(timerId);
         const allBtns = document.querySelectorAll('.grid button');
         allBtns.forEach(btn => btn.disabled = true);
-
-        const bar = document.getElementById('timer-bar');
-        const computedStyle = window.getComputedStyle(bar);
-        const currentWidth = computedStyle.getPropertyValue('width');
-        bar.style.transition = 'none';
-        bar.style.width = currentWidth;
-
         if (isCorrect) {
             targetBtn.classList.add('correct-ans');
-            setTimeout(() => {
-                currentLevel++;
-                initGame();
-            }, 700);
+            setTimeout(() => { currentLevel++; initGame(); }, 700);
         } else {
             targetBtn.classList.add('wrong-ans');
             allBtns[correctIdx].classList.add('correct-ans');
-            setTimeout(() => {
-                alert("❌ 아쉽네요! 다시 도전해보세요.");
-                location.reload();
-            }, 1000);
+            setTimeout(() => { alert("❌ 틀렸습니다! 메인으로 이동합니다."); window.location.href = 'index.html'; }, 1000);
         }
     }
 
     function startTimer(duration, correctIdx) {
         const bar = document.getElementById('timer-bar');
-        bar.style.transition = 'none';
-        bar.style.width = '100%';
-        bar.offsetHeight; 
-        bar.style.transition = `width ${duration}ms linear`;
-        bar.style.width = '0%';
-
+        bar.style.transition = 'none'; bar.style.width = '100%'; bar.offsetHeight;
+        bar.style.transition = `width ${duration}ms linear`; bar.style.width = '0%';
         if (timerId) clearTimeout(timerId);
-        
         timerId = setTimeout(() => {
-            if (isGameOver) return; 
+            if (isGameOver) return;
             isGameOver = true;
-            const allBtns = document.querySelectorAll('.grid button');
-            allBtns.forEach(btn => btn.disabled = true);
-            allBtns[correctIdx].classList.add('correct-ans');
-
-            setTimeout(() => {
-                alert("⏰ 시간 초과! 조금 더 빨리 찾아보세요.");
-                location.reload();
-            }, 1000);
+            document.querySelectorAll('.grid button')[correctIdx].classList.add('correct-ans');
+            setTimeout(() => { alert("⏰ 시간 초과! 메인으로 이동합니다."); window.location.href = 'index.html'; }, 1000);
         }, duration);
     }
-
     initGame();
 </script>
-
 </body>
 </html>
