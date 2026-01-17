@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SALC 영어 게임</title>
+    <style>
+        /* 깔끔한 화이트 테마 설정 */
+        body { 
+            font-family: 'Pretendard', -apple-system, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            background: #f5f7fa; /* 연한 그레이빛 화이트 */
+            color: #333; 
+        }
+
+        .container { 
+            text-align: center; 
+            width: 90%; 
+            max-width: 600px; 
+            background: white; 
+            padding: 40px 20px; 
+            border-radius: 30px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); /* 부드러운 그림자 */
+        }
+
+        h1 { 
+            color: #1a73e8; /* 메인 블루 색상 */
+            margin-bottom: 40px; 
+            font-size: 1.8rem; 
+            letter-spacing: -0.5px;
+        }
+
+        /* 버튼을 양옆으로 배치하기 위한 플렉스 박스 */
+        .menu-wrapper {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn { 
+            flex: 1; /* 양쪽 버튼 크기를 동일하게 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 10px; 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            cursor: pointer; 
+            background: #ffffff; 
+            color: #1a73e8; 
+            border: 2px solid #e8f0fe; 
+            border-radius: 20px; 
+            transition: all 0.3s ease; 
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.08);
+        }
+
+        /* 마우스 올렸을 때 효과 */
+        .btn:hover { 
+            background: #1a73e8; 
+            color: white; 
+            border-color: #1a73e8; 
+            transform: translateY(-5px); 
+            box-shadow: 0 8px 20px rgba(26, 115, 232, 0.2);
+        }
+
+        .desc { 
+            font-size: 0.8rem; 
+            margin-top: 8px; 
+            font-weight: normal; 
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>게임 선택</h1>
+        
+        <div class="menu-wrapper">
+            <a href="quiz1.html" class="btn">
+                영단어 맞추기
+                <div class="desc"></div>
+            </a>
+
+            <a href="quiz2.html" class="btn">
+                토스 게임
+                <div class="desc"></div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

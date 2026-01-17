@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>토스 게임 - SAIC 찾기</title>
+    <style>
+        /* 화이트 & 블루 테마 적용 */
+        body { 
+            font-family: 'Pretendard', -apple-system, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            background: #f5f7fa; 
+            color: #333; 
+            overflow: hidden; 
+        }
+
+        .card { 
+            background: white; 
+            padding: 30px 20px; 
+            border-radius: 30px; 
+            text-align: center; 
+            width: 350px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+        }
+
+        #level-info { 
+            color: #1a73e8; 
+            font-weight: bold; 
+            font-size: 1.3rem; 
+            margin-bottom: 10px; 
+        }
+
+        /* 블루 테마의 타이머 바 */
+        #timer-container { 
+            width: 100%; 
+            background: #e8f0fe; 
+            height: 100%; 
+            height: 8px; 
+            border-radius: 10px; 
+            margin: 20px 0; 
+            overflow: hidden; 
+        }
+
+        #timer-bar { 
+            width: 100%; 
+            height: 100%; 
+            background: #1a73e8; 
+            transition: linear; 
+        }
+
+        /* 4x4 그리드 설정 */
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 10px; 
+            margin-top: 25px; 
+        }
+
+        .grid button { 
+            aspect-ratio: 1; 
+            border: 2px solid #e8f0fe; 
+            border-radius: 12px; 
+            background: #ffffff; 
+            color: #1a73e8; 
+            font-size: 0.9rem; 
+            font-weight: bold; 
+            cursor: pointer; 
+            padding: 0; 
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.05);
+        }
+
+        .grid button:active { 
+            background: #f1f6ff; 
+            transform: scale(0.95); 
+        }
+
+        .instruction {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div id="level-info">Level 1</div>
+    <div id="timer-container"><div id="timer-bar"></div></div>
+    <div class="instruction">다른 글자를 하나 찾으세요!</div>
+    <div class="grid" id="game-grid"></div>
+</div>
+
+<script>
+    // 모든 단계 SALC vs SAIC 고정, 시간만 단축
+    const stages = [
+        { normal: "SALC", diff: "SAIC", time: 5000 }, // 1단계: 5초
+        { normal: "SALC", diff: "SAIC", time: 3500 }, // 2단계: 3.5초
+        { normal: "SALC", diff: "SAIC", time: 2500 }, // 3단계: 2.5초
+        { normal: "SALC", diff: "SAIC", time: 1800 }, // 4단계: 1.8초
+        { normal: "SALC", diff: "SAIC", time: 1200 }  // 5단계: 1.2초
+    ];
+
+    let currentLevel = 0;
+    let timer;
+
+    function initGame() {
+        if (currentLevel >= stages.length) {
+            alert("🎊 미션 성공! 당신의 집중력은 최고입니다.");
+            window.location.href = 'index.html';
+            return;
+        }
+
+        const stage = stages[currentLevel];
+        document.getElementById('level-info').innerText = `Level ${currentLevel + 1}`;
+        const grid = document.getElementById('game-grid');
+        grid.innerHTML = "";
+
+        // 4x4 (16개) 중 랜덤 위치 선정
+        const diffIndex = Math.floor(Math.random() * 16);
+
+        for (let i = 0; i < 16; i++) {
+            const btn = document.createElement('button');
+            btn.innerText = (i === diffIndex) ? stage.diff : stage.normal;
+            btn.onclick = () => {
+                if(i === diffIndex) {
+                    clearTimeout(timer);
+                    currentLevel++;
+                    initGame();
+                } else {
+                    alert("❌ 틀렸습니다! 다시 도전하세요.");
+                    location.reload();
+                }
+            };
+            grid.appendChild(btn);
+        }
+        startTimer(stage.time);
+    }
+
+    function startTimer(duration) {
+        const bar = document.getElementById('timer-bar');
+        bar.style.transition = 'none';
+        bar.style.width = '100%';
+        bar.offsetHeight; // Reflow 발생
+        bar.style.transition = `width ${duration}ms linear`;
+        bar.style.width = '0%';
+
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            alert("⏰ 시간 초과! 다시 도전하세요.");
+            location.reload();
+        }, duration);
+    }
+
+    initGame();
+</script>
+
+</body>
+</html>
