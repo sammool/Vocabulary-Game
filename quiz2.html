@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>토스 게임 - 단계별 챌린지</title>
+    <title>토스 게임 - 테두리 강조형</title>
     <style>
         body { 
             font-family: 'Pretendard', -apple-system, sans-serif; 
@@ -19,24 +19,24 @@
 
         .card { 
             background: white; 
-            padding: 30px 20px; 
+            padding: 30px 25px; 
             border-radius: 30px; 
             text-align: center; 
-            width: 350px; 
+            width: 440px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
         }
 
         #level-info { 
             color: #1a73e8; 
             font-weight: bold; 
-            font-size: 1.3rem; 
+            font-size: 1.4rem; 
             margin-bottom: 10px; 
         }
 
         #timer-container { 
             width: 100%; 
             background: #e8f0fe; 
-            height: 8px; 
+            height: 10px; 
             border-radius: 10px; 
             margin: 20px 0; 
             overflow: hidden; 
@@ -49,34 +49,43 @@
             transition: linear; 
         }
 
-        /* 그리드 기본 스타일 (JS에서 컬럼 수 조절) */
         .grid { 
             display: grid; 
-            gap: 10px; 
+            gap: 8px; 
             margin-top: 25px; 
         }
 
         .grid button { 
             aspect-ratio: 1; 
-            border: 2px solid #e8f0fe; 
+            border: 2px solid #e8f0fe; /* 기본 테두리 */
             border-radius: 12px; 
             background: #ffffff; 
             color: #1a73e8; 
-            font-size: 0.9rem; 
+            font-size: 1.1rem; 
             font-weight: bold; 
             cursor: pointer; 
             padding: 0; 
             transition: all 0.2s;
-            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.05);
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.03);
         }
 
-        .grid button:active { 
-            background: #f1f6ff; 
-            transform: scale(0.95); 
+        /* [핵심] 테두리만 색상 변경하는 스타일 */
+        .grid button.correct-ans {
+            background-color: #ffffff !important; /* 배경은 흰색 유지 */
+            color: #4CAF50 !important;           /* 글자색 초록 */
+            border: 3px solid #4CAF50 !important; /* 테두리 초록 + 두껍게 */
         }
+
+        .grid button.wrong-ans {
+            background-color: #ffffff !important; /* 배경은 흰색 유지 */
+            color: #F44336 !important;           /* 글자색 빨강 */
+            border: 3px solid #F44336 !important; /* 테두리 빨강 + 두껍게 */
+        }
+
+        .grid button:disabled { cursor: default; }
 
         .instruction {
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: #666;
             margin-bottom: 5px;
         }
@@ -87,30 +96,31 @@
 <div class="card">
     <div id="level-info">Level 1</div>
     <div id="timer-container"><div id="timer-bar"></div></div>
-    <div class="instruction">다른 글자를 하나 찾으세요!</div>
+    <div class="instruction">다른 글자를 찾으세요!</div>
     <div class="grid" id="game-grid"></div>
 </div>
 
 <script>
-    // 사용자 요청 구성: 1단계(2x2), 2단계(3x3), 3단계(4x4), 4단계(5x5)
-    // 시간은 일관되게 4초(4000ms) 근처로 설정
     const stages = [
-        { size: 2, normal: "SALC", diff: "SAIC", time: 4300 }, // 1단계: 2x2
-        { size: 3, normal: "SALC", diff: "SAIC", time: 4300 }, // 2단계: 3x3
-        { size: 4, normal: "SALC", diff: "SAIC", time: 4300 }, // 3단계: 4x4
-        { size: 5, normal: "SALC", diff: "SAIC", time: 4300 }  // 4단계: 5x5
+        { size: 2, normal: "SALC", diff: "SAIC", time: 4300 },
+        { size: 3, normal: "SALC", diff: "SAIC", time: 4300 },
+        { size: 4, normal: "SALC", diff: "SAIC", time: 4300 },
+        { size: 5, normal: "SALC", diff: "SAIC", time: 4300 },
+        { size: 6, normal: "SALC", diff: "SAIC", time: 4300 }
     ];
 
     let currentLevel = 0;
-    let timer;
+    let timerId = null;
+    let isGameOver = false;
 
     function initGame() {
         if (currentLevel >= stages.length) {
-            alert("🎊 모든 단계를 클리어했습니다! 당신의 눈미썰은 대단하군요.");
+            alert("🎊 미션 클리어! 대단한 집중력입니다.");
             window.location.href = 'index.html';
             return;
         }
 
+        isGameOver = false;
         const stage = stages[currentLevel];
         const gridSize = stage.size;
         const totalCells = gridSize * gridSize;
@@ -118,7 +128,6 @@
         document.getElementById('level-info').innerText = `Level ${currentLevel + 1} (${gridSize}x${gridSize})`;
         
         const grid = document.getElementById('game-grid');
-        // 그리드 컬럼 수 동적 변경
         grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
         grid.innerHTML = "";
 
@@ -126,26 +135,47 @@
 
         for (let i = 0; i < totalCells; i++) {
             const btn = document.createElement('button');
-            // 칸이 많아지면 글자 크기를 살짝 줄임
-            if (gridSize >= 5) btn.style.fontSize = "0.7rem";
+            if (gridSize === 5) btn.style.fontSize = "0.9rem";
+            if (gridSize >= 6) btn.style.fontSize = "0.8rem";
             
             btn.innerText = (i === diffIndex) ? stage.diff : stage.normal;
-            btn.onclick = () => {
-                if(i === diffIndex) {
-                    clearTimeout(timer);
-                    currentLevel++;
-                    initGame();
-                } else {
-                    alert("❌ 틀렸습니다! 다시 집중해보세요.");
-                    location.reload();
-                }
-            };
+            btn.onclick = (e) => handleButtonClick(i === diffIndex, e.target, diffIndex);
             grid.appendChild(btn);
         }
-        startTimer(stage.time);
+        startTimer(stage.time, diffIndex);
     }
 
-    function startTimer(duration) {
+    function handleButtonClick(isCorrect, targetBtn, correctIdx) {
+        if (isGameOver) return;
+        isGameOver = true; 
+        clearTimeout(timerId); 
+
+        const allBtns = document.querySelectorAll('.grid button');
+        allBtns.forEach(btn => btn.disabled = true);
+
+        const bar = document.getElementById('timer-bar');
+        const computedStyle = window.getComputedStyle(bar);
+        const currentWidth = computedStyle.getPropertyValue('width');
+        bar.style.transition = 'none';
+        bar.style.width = currentWidth;
+
+        if (isCorrect) {
+            targetBtn.classList.add('correct-ans');
+            setTimeout(() => {
+                currentLevel++;
+                initGame();
+            }, 700);
+        } else {
+            targetBtn.classList.add('wrong-ans');
+            allBtns[correctIdx].classList.add('correct-ans');
+            setTimeout(() => {
+                alert("❌ 아쉽네요! 다시 도전해보세요.");
+                location.reload();
+            }, 1000);
+        }
+    }
+
+    function startTimer(duration, correctIdx) {
         const bar = document.getElementById('timer-bar');
         bar.style.transition = 'none';
         bar.style.width = '100%';
@@ -153,10 +183,19 @@
         bar.style.transition = `width ${duration}ms linear`;
         bar.style.width = '0%';
 
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            alert("⏰ 시간 초과! 조금 더 빠르게 찾아야 해요.");
-            location.reload();
+        if (timerId) clearTimeout(timerId);
+        
+        timerId = setTimeout(() => {
+            if (isGameOver) return; 
+            isGameOver = true;
+            const allBtns = document.querySelectorAll('.grid button');
+            allBtns.forEach(btn => btn.disabled = true);
+            allBtns[correctIdx].classList.add('correct-ans');
+
+            setTimeout(() => {
+                alert("⏰ 시간 초과! 조금 더 빨리 찾아보세요.");
+                location.reload();
+            }, 1000);
         }, duration);
     }
 
