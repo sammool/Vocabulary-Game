@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>토스 게임 - SAIC 찾기</title>
+    <title>토스 게임 - 단계별 챌린지</title>
     <style>
-        /* 화이트 & 블루 테마 적용 */
         body { 
             font-family: 'Pretendard', -apple-system, sans-serif; 
             display: flex; 
@@ -34,11 +33,9 @@
             margin-bottom: 10px; 
         }
 
-        /* 블루 테마의 타이머 바 */
         #timer-container { 
             width: 100%; 
             background: #e8f0fe; 
-            height: 100%; 
             height: 8px; 
             border-radius: 10px; 
             margin: 20px 0; 
@@ -52,10 +49,9 @@
             transition: linear; 
         }
 
-        /* 4x4 그리드 설정 */
+        /* 그리드 기본 스타일 (JS에서 컬럼 수 조절) */
         .grid { 
             display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
             gap: 10px; 
             margin-top: 25px; 
         }
@@ -96,13 +92,13 @@
 </div>
 
 <script>
-    // 모든 단계 SALC vs SAIC 고정, 시간만 단축
+    // 사용자 요청 구성: 1단계(2x2), 2단계(3x3), 3단계(4x4), 4단계(5x5)
+    // 시간은 일관되게 4초(4000ms) 근처로 설정
     const stages = [
-        { normal: "SALC", diff: "SAIC", time: 5000 }, // 1단계: 5초
-        { normal: "SALC", diff: "SAIC", time: 3500 }, // 2단계: 3.5초
-        { normal: "SALC", diff: "SAIC", time: 2500 }, // 3단계: 2.5초
-        { normal: "SALC", diff: "SAIC", time: 1800 }, // 4단계: 1.8초
-        { normal: "SALC", diff: "SAIC", time: 1200 }  // 5단계: 1.2초
+        { size: 2, normal: "SALC", diff: "SAIC", time: 4300 }, // 1단계: 2x2
+        { size: 3, normal: "SALC", diff: "SAIC", time: 4300 }, // 2단계: 3x3
+        { size: 4, normal: "SALC", diff: "SAIC", time: 4300 }, // 3단계: 4x4
+        { size: 5, normal: "SALC", diff: "SAIC", time: 4300 }  // 4단계: 5x5
     ];
 
     let currentLevel = 0;
@@ -110,21 +106,29 @@
 
     function initGame() {
         if (currentLevel >= stages.length) {
-            alert("🎊 미션 성공! 당신의 집중력은 최고입니다.");
+            alert("🎊 모든 단계를 클리어했습니다! 당신의 눈미썰은 대단하군요.");
             window.location.href = 'index.html';
             return;
         }
 
         const stage = stages[currentLevel];
-        document.getElementById('level-info').innerText = `Level ${currentLevel + 1}`;
+        const gridSize = stage.size;
+        const totalCells = gridSize * gridSize;
+
+        document.getElementById('level-info').innerText = `Level ${currentLevel + 1} (${gridSize}x${gridSize})`;
+        
         const grid = document.getElementById('game-grid');
+        // 그리드 컬럼 수 동적 변경
+        grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
         grid.innerHTML = "";
 
-        // 4x4 (16개) 중 랜덤 위치 선정
-        const diffIndex = Math.floor(Math.random() * 16);
+        const diffIndex = Math.floor(Math.random() * totalCells);
 
-        for (let i = 0; i < 16; i++) {
+        for (let i = 0; i < totalCells; i++) {
             const btn = document.createElement('button');
+            // 칸이 많아지면 글자 크기를 살짝 줄임
+            if (gridSize >= 5) btn.style.fontSize = "0.7rem";
+            
             btn.innerText = (i === diffIndex) ? stage.diff : stage.normal;
             btn.onclick = () => {
                 if(i === diffIndex) {
@@ -132,7 +136,7 @@
                     currentLevel++;
                     initGame();
                 } else {
-                    alert("❌ 틀렸습니다! 다시 도전하세요.");
+                    alert("❌ 틀렸습니다! 다시 집중해보세요.");
                     location.reload();
                 }
             };
@@ -145,13 +149,13 @@
         const bar = document.getElementById('timer-bar');
         bar.style.transition = 'none';
         bar.style.width = '100%';
-        bar.offsetHeight; // Reflow 발생
+        bar.offsetHeight; 
         bar.style.transition = `width ${duration}ms linear`;
         bar.style.width = '0%';
 
         clearTimeout(timer);
         timer = setTimeout(() => {
-            alert("⏰ 시간 초과! 다시 도전하세요.");
+            alert("⏰ 시간 초과! 조금 더 빠르게 찾아야 해요.");
             location.reload();
         }, duration);
     }
