@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결과 페이지</title>
+    <style>
+        body { font-family: 'Pretendard', -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #f8f9fa; color: #333; }
+        
+        .card { 
+            background: white; 
+            padding: 30px 20px; 
+            border-radius: 30px; 
+            text-align: center; 
+            width: 360px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        
+        /* 상단 상태 텍스트 (아이콘 포함) */
+        .status-header { font-size: 1.4rem; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .fail-color { color: #ff5252; }
+        .success-color { color: #1a73e8; }
+
+        /* 포스터 이미지 */
+        .poster-img { 
+            width: 100%; 
+            border-radius: 15px; 
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* 지원 링크 버튼 (이미지 속 점선 스타일 반영) */
+        .apply-link { 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 25px; 
+            padding: 15px 10px; 
+            background: #ffffff; 
+            border: 2px dashed #1a73e8; 
+            border-radius: 15px;
+            color: #1a73e8; 
+            font-size: 0.95rem; 
+            font-weight: bold; 
+            text-decoration: none; 
+            transition: background 0.2s;
+        }
+        .apply-link:hover { background: #f0f7ff; }
+
+        /* 메인으로 돌아가기 버튼 (파란색 하단 버튼) */
+        .home-btn { 
+            display: block; 
+            width: 100%; 
+            padding: 18px 0; 
+            background: #1a73e8; 
+            color: white; 
+            border: none; 
+            border-radius: 18px; 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            cursor: pointer; 
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .home-btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div id="status-area" class="status-header"></div>
+
+    <img src="salc.png" alt="SALC 포스터" class="poster-img">
+
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfR2gKf7AWb6Knv5NFfckXCrwkx6OkcgmxbD-81pMhNwBRnDg/viewform" class="apply-link" target="_blank">
+        🔗 2026-1 SALC 신입부원 모집 바로가기!
+    </a>
+
+    <a href="index.html" class="home-btn">메인으로 돌아가기</a>
+</div>
+
+<script>
+    // URL에서 성공/실패 여부를 가져옴
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+    const statusArea = document.getElementById('status-area');
+
+    if (status === 'success') {
+        statusArea.innerHTML = `🎊 <span class="success-color">미션 성공!</span>`;
+    } else {
+        // "아쉽지만~" 문구를 제외하고 깔끔하게 "실패 ㅠㅠ"만 표시
+        statusArea.innerHTML = `⏰ <span class="fail-color">실패 ㅠㅠ</span>`;
+    }
+</script>
+
+</body>
+</html>
