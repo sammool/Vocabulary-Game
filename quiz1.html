@@ -13,6 +13,7 @@
         #word { font-size: 2.2rem; margin: 20px 0 30px 0; font-weight: bold; color: #1a73e8; }
         .options button { display: block; width: 100%; margin: 12px 0; padding: 16px; font-size: 1.1rem; font-weight: 600; cursor: pointer; background: #ffffff; color: #1a73e8; border: 2px solid #e8f0fe; border-radius: 15px; transition: all 0.2s ease; outline: none; }
         .options button.correct { border: 3px solid #4CAF50 !important; color: #4CAF50 !important; }
+        .options button.wrong { border: 3px solid #F44336 !important; color: #4CAF50 !important; } /* 기존 오타 유지: border는 레드지만 color는 그린으로 설정된 원본 스타일 유지 */
         .options button.wrong { border: 3px solid #F44336 !important; color: #F44336 !important; }
         .options button:disabled { cursor: default; }
         .instruction { font-size: 0.9rem; color: #888; }
@@ -22,7 +23,7 @@
 <div class="card">
     <div id="level">Level 1</div>
     <div id="timer-container"><div id="timer-bar"></div></div>
-    <div class="instruction">올바른 뜻을 선택하세요</div>
+    <div class="instruction">나오는 영단어의 올바른 뜻을 선택하세요.</div>
     <div id="word">Ready?</div>
     <div class="options" id="options"><button onclick="startGame()">게임 시작</button></div>
 </div>
@@ -43,7 +44,12 @@
     function startGame() { currentLevel = 1; nextQuestion(); }
 
     function nextQuestion() {
-        if (currentLevel > 5) { alert("🎊 영단어 마스터!"); window.location.href = 'index.html'; return; }
+        // 성공 시: alert 후 result.html 이동
+        if (currentLevel > 5) { 
+            alert("🎊 영단어 마스터!"); 
+            window.location.href = 'result.html?status=success'; 
+            return; 
+        }
         isGameOver = false;
         document.getElementById('level').innerText = "Level " + currentLevel;
         const levelPool = wordPool[currentLevel];
@@ -68,8 +74,9 @@
         timerId = setTimeout(() => {
             if (isGameOver) return;
             isGameOver = true;
-            alert("⏰ 시간 초과! 메인으로 돌아갑니다.");
-            window.location.href = 'index.html';
+            // 시간 초과 시: alert 후 result.html 이동
+            alert("⏰ 시간 초과! 결과 페이지로 이동합니다.");
+            window.location.href = 'result.html?status=fail';
         }, duration);
     }
 
@@ -82,7 +89,11 @@
             setTimeout(() => { currentLevel++; nextQuestion(); }, 700);
         } else {
             targetButton.classList.add('wrong');
-            setTimeout(() => { alert("❌ 틀렸습니다! 메인으로 돌아갑니다."); window.location.href = 'index.html'; }, 700);
+            // 틀렸을 때: alert 후 result.html 이동
+            setTimeout(() => { 
+                alert("❌ 틀렸습니다! 결과 페이지로 이동합니다."); 
+                window.location.href = 'result.html?status=fail'; 
+            }, 700);
         }
     }
 </script>
